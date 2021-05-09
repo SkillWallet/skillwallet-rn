@@ -1,0 +1,12 @@
+{
+  "name": "skillwallet",
+  "displayName": "SkillWallet",
+  "expo": {
+    "name": "skillwallet",
+    "slug": "skillwallet",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
