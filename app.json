@@ -1,6 +1,7 @@
 {
   "name": "skillwallet",
   "displayName": "SkillWallet",
+  "icon": "./assets/logo.png",
   "expo": {
     "name": "skillwallet",
     "slug": "skillwallet",

@@ -30,7 +30,7 @@ export default function Splash() {
     
     
     
-    const keyPair = eccryptoJS.generateKeyPair();
+    
 
    
     
@@ -38,9 +38,10 @@ export default function Splash() {
 
 
 
-    const storeData = async (value) => {
+    const storeData = async () => {
+      const keyPair = eccryptoJS.generateKeyPair();
       try {
-        const jsonValue = value;
+        const jsonValue = keyPair;
         await AsyncStorage.setItem('@keyPair',JSON.stringify(jsonValue) )
       } catch (e) {
         // saving error
@@ -59,8 +60,6 @@ export default function Splash() {
     const getData = async () => {
         try {
           const jsonValue = await AsyncStorage.getItem('@token');
-          console.log(keyPair)
-          storeData(keyPair);
           if(jsonValue==null){
             setTimeout(() => {
                 navigation.navigate('Welcome');
@@ -84,10 +83,11 @@ export default function Splash() {
       }
 
     useEffect(() => {
+      storeData(keyPair);
         getData();
       });
     
-    if(loaded){
+    if(loaded && keyPair){
       return (
         <View style={styles.container}>
             <Image source={require('../assets/logo.png')} style={styles.logo}></Image>

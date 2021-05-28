@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
+import * as eccryptoJS from 'eccrypto-js';
+
+
 
 export default function Qr() {
   const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
+  const [scanned, setScanned] = useState(true);
   const [code, setCode] = useState(false);
   const [token, setToken] = useState(null);
   const [key, setKey] = useState(null);
@@ -32,7 +35,7 @@ export default function Qr() {
       console.log(jsonValue);
       setToken(jsonValue);
       getKey();
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
+     
       
     } catch(e) {
       // error reading value
@@ -43,7 +46,7 @@ export default function Qr() {
     try {
       const jsonValue = await AsyncStorage.getItem('@keyPair')
       console.log(JSON.parse(jsonValue));
-      setKey(jsonValue);
+      setKey(JSON.parse(jsonValue));
       return jsonValue != null ? JSON.parse(jsonValue) : null;
       
     } catch(e) {
@@ -52,16 +55,26 @@ export default function Qr() {
   }
 
   const _activate = async (qr) => {
-    const signed = await eccryptoJS.sign(key.privateKey, qr.hash);
-    console.log(signed);
-    fetch('https://api.distributed.town/api/skillwallet/activate',{
+    console.log(JSON.stringify(key));
+    const hex = eccryptoJS.utf8ToHex(key.publicKey);
+    const hashed = await eccryptoJS.keccak256(hex);
+    //const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer("123"));
+    //console.log(eccryptoJS.bufferToHex(signed),"signed");
+    //console.log(hex, "PUBLICHEX");
+    const pubKeyHashed = eccryptoJS.bufferToHex(hashed);
+    console.log(pubKeyHashed, "PUBLICHASHED");
+    console.log(qr);
+    const qrValue = JSON.parse(qr);
+    fetch(`https://api.distributed.town/api/skillwallet/${qrValue.tokenId}/activate`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: signed,
+      body: {
+        "pubKey": JSON.stringify(pubKeyHashed)
+    },
     })
-  .then(response => response.json())
+  .then(response => response.text())
   .then(data => {
     console.log(data);
     if(data.message=='Skill Wallet activated successfully.'){
@@ -91,18 +104,21 @@ export default function Qr() {
 });
   }
 
-  const handleBarCodeScanned = ({ type, data }) => {
-    console.log(data);
+  const handleBarCodeScanned = e => {
+    console.log(e.data,"Scanned Data");
     if(token==null){
-      _activate(data);
-      storeData(data);
+      console.log(e.data);
+      _activate(e.data);
+      storeData(JSON.stringify(e.data));
     }
     else{
-      _authenticate(data);
+      //_authenticate(data);
+      _activate(e.data);
+      storeData(JSON.stringify(e.data));
     }
     
     
-    setScanned(true);
+    setScanned(false);
     
   };
 
@@ -112,7 +128,7 @@ export default function Qr() {
     <View style={styles.container}>
 
       <QRCodeScanner
-        onRead={scanned ? undefined : handleBarCodeScanned}
+        onRead={scanned ? handleBarCodeScanned : undefined }
         
       />
       
