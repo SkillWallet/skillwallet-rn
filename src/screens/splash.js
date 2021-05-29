@@ -27,6 +27,8 @@ export default function Splash() {
         AB: require('../assets/AB.otf'),
       });
 
+    const keyPair = eccryptoJS.generateKeyPair();
+
     
     
     
@@ -39,23 +41,16 @@ export default function Splash() {
 
 
     const storeData = async () => {
-      const keyPair = eccryptoJS.generateKeyPair();
+      
       try {
         const jsonValue = keyPair;
+        console.log(jsonValue);
         await AsyncStorage.setItem('@keyPair',JSON.stringify(jsonValue) )
       } catch (e) {
         // saving error
       }
     }
 
-    
-
-    
-       
-
-    
-      
-  
 
     const getData = async () => {
         try {
@@ -75,7 +70,7 @@ export default function Splash() {
             }, 3000);
           }
 
-          return jsonValue != null ? JSON.parse(jsonValue) : null;
+          return jsonValue == null ? JSON.parse(jsonValue) : null;
           
         } catch(e) {
           // error reading value
@@ -83,11 +78,11 @@ export default function Splash() {
       }
 
     useEffect(() => {
-      storeData(keyPair);
+        storeData();
         getData();
       });
     
-    if(loaded && keyPair){
+    if(loaded){
       return (
         <View style={styles.container}>
             <Image source={require('../assets/logo.png')} style={styles.logo}></Image>
