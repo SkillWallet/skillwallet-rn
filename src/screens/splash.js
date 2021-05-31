@@ -22,12 +22,13 @@ import * as eccryptoJS from 'eccrypto-js';
 export default function Splash() {
     const navigation = useNavigation();
     const [token,setToken] = useState(null);
+    const [keys,setKeys] = useState(null);
     const [loaded] = useFonts({
         AR: require('../assets/AR.otf'),
         AB: require('../assets/AB.otf'),
       });
 
-    const keyPair = eccryptoJS.generateKeyPair();
+    
 
     
     
@@ -40,7 +41,7 @@ export default function Splash() {
 
 
 
-    const storeData = async () => {
+    const storeData = async (keyPair) => {
       
       try {
         const jsonValue = keyPair;
@@ -48,6 +49,27 @@ export default function Splash() {
         await AsyncStorage.setItem('@keyPair',JSON.stringify(jsonValue) )
       } catch (e) {
         // saving error
+      }
+    }
+    const getKeys = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('@keyPair');
+        if(jsonValue!=null){
+          const keyPair = eccryptoJS.generateKeyPair();
+          storeData(keyPair);
+
+        }
+        else{
+          console.log(jsonValue);
+          await setKeys(jsonValue);
+          console.log(keys);
+          
+        }
+
+        return jsonValue == null ? JSON.parse(jsonValue) : null;
+        
+      } catch(e) {
+        // error reading value
       }
     }
 
@@ -78,7 +100,7 @@ export default function Splash() {
       }
 
     useEffect(() => {
-        storeData();
+        getKeys();
         getData();
       });
     

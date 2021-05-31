@@ -32,7 +32,7 @@ export default function Qr() {
   const getData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('@token')
-      console.log(jsonValue);
+      console.log(jsonValue,"Token");
       setToken(jsonValue);
       getKey();
      
@@ -58,8 +58,7 @@ export default function Qr() {
     console.log(JSON.stringify(key));
     const hex = eccryptoJS.utf8ToHex(key.publicKey);
     const hashed = await eccryptoJS.keccak256(hex);
-    //const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer("123"));
-    //console.log(eccryptoJS.bufferToHex(signed),"signed");
+    
     //console.log(hex, "PUBLICHEX");
     const pubKeyHashed = eccryptoJS.bufferToHex(hashed);
     console.log(pubKeyHashed, "PUBLICHASHED");
@@ -86,25 +85,34 @@ export default function Qr() {
     }
   });
   }
-  const _authenticate = (qr) => {
-    fetch('https://api.distributed.town/api/skillwallet/login',{
+  const _authenticate = async (qr) => {
+    const qrData = JSON.parse(qr);
+    console.log(JSON.parse(token),"TOKEN");
+    console.log(qrData.nonce.toString());
+    const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()));
+    const signedHex = eccryptoJS.bufferToHex(signed);
+    const signedString = signedHex.toString();
+    const body = JSON.stringify({"signature" : signedString ,"action":1});
+    const tokenjson = JSON.parse(JSON.parse(token));
+    console.log(tokenjson.tokenId,"body");
+    fetch(`https://api.distributed.town/api/skillwallet/${tokenjson.tokenId}/validate`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: qr,
+      body: body ,
     })
-.then(response => response.json())
-.then(data => {
-  console.log(data);
-  if(data.message!=null){
-  alert('Authenticated');
-  }
-  else{
-    alert(data.error);
-  }
-  navigation.navigate('Profile');
-});
+.then(response => {
+  console.log(response.statusText);
+  if(response.status==200){
+    alert('Authenticated');
+    navigation.navigate('Profile');
+    }
+    else{
+      alert('Something went wrong');
+    }
+    
+})
   }
 
   const handleBarCodeScanned = e => {
@@ -115,9 +123,8 @@ export default function Qr() {
       storeData(JSON.stringify(e.data));
     }
     else{
-      //_authenticate(data);
-      _activate(e.data);
-      storeData(JSON.stringify(e.data));
+      _authenticate(e.data);
+      
     }
     
     

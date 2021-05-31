@@ -18,7 +18,7 @@ export default function Welcome() {
                 <Svg height="50" width="275" style={styles.line}>
                 <Line x1="0" y1="0" x2="275" y2="0" stroke="white" strokeWidth="2" />
                 </Svg>
-                <Text style={styles.text}>Scan your Community QR-Code to verify your Membership</Text>
+                <Text style={styles.text}>Scan your Community QR-Code to verify your Membership or Login</Text>
                 <TouchableOpacity onPress={()=>navigation.navigate('Qr')}><View style={styles.btn}>
                     <Text style={styles.btntext}>Scan QR-Code</Text>
                     <Icon name="scan" type="ionicon" style={styles.btnicon} color='#FFF'></Icon>
