@@ -63,16 +63,19 @@ export default function Qr() {
     //console.log(hex, "PUBLICHEX");
     const pubKeyHashed = eccryptoJS.bufferToHex(hashed);
     console.log(pubKeyHashed, "PUBLICHASHED");
-    console.log(qr);
+    const pubKeyString = pubKeyHashed.toString();
+    console.log(pubKeyString);
     const qrValue = JSON.parse(qr);
-    fetch(`https://api.distributed.town/api/skillwallet/${qrValue.tokenId}/activate`,{
+    const tokenValue = qrValue.tokenId
+    console.log(tokenValue);
+    fetch(`https://api.distributed.town/api/skillwallet/${tokenValue}/activate`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: {
-        "pubKey": JSON.stringify(pubKeyHashed)
-    },
+      body: JSON.stringify({
+        "pubKey": pubKeyString
+    })
     })
   .then(response => response.text())
   .then(data => {
@@ -129,6 +132,7 @@ export default function Qr() {
 
       <QRCodeScanner
         onRead={scanned ? handleBarCodeScanned : undefined }
+        showMarker={true}
         
       />
       
