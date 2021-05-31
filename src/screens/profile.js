@@ -46,9 +46,10 @@ export default function Profile() {
   });
     
     const _getProfileInfo = () => {
+      console.log(token);
       let t = JSON.parse(token);
-      console.log(t);
-      fetch(`https://api.distributed.town/api/skillwallet?tokenId=${JSON.parse(t.tokenId)}`)
+      console.log(t.tokenId,"what's this?");
+      fetch(`https://api.distributed.town/api/skillwallet?tokenId=${t.tokenId}`)
   .then(response => response.json())
   .then(data => {
     console.log(data,"Data");
@@ -72,8 +73,8 @@ export default function Profile() {
       const getData = async () => {
         try {
           const jsonValue = await AsyncStorage.getItem('@token')
-          console.log(jsonValue);
-          setToken(jsonValue);
+          console.log(JSON.parse(jsonValue),"TOKEN");
+          setToken(JSON.parse(jsonValue));
           
           
         } catch(e) {
@@ -120,7 +121,7 @@ export default function Profile() {
                     </View>
                   </View>
           )});
-    if(token!=null && profileflag){
+    if(token!=null && profileflag && profileinfo){
     return (
         <View style={styles.container}>
             <Icon name="menu" type="ionicons" color="#FFF" style={styles.menu}></Icon>
