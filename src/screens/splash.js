@@ -54,7 +54,7 @@ export default function Splash() {
     const getKeys = async () => {
       try {
         const jsonValue = await AsyncStorage.getItem('@keyPair');
-        if(jsonValue!=null){
+        if(jsonValue == null){
           const keyPair = eccryptoJS.generateKeyPair();
           storeData(keyPair);
 
@@ -77,7 +77,7 @@ export default function Splash() {
     const getData = async () => {
         try {
           const jsonValue = await AsyncStorage.getItem('@token');
-          if(jsonValue!=null){
+          if(jsonValue==null){
             setTimeout(() => {
                 navigation.navigate('Welcome');
             }, 3000);

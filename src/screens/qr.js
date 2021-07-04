@@ -67,14 +67,27 @@ export default function Qr() {
     const qrValue = JSON.parse(qr);
     const tokenValue = qrValue.tokenId
     console.log(tokenValue);
+    const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrValue.hash.toString()));
+    const signedHex = eccryptoJS.bufferToHex(signed);
+    const signedString = signedHex.toString();
+    const body = JSON.stringify({"pubKey": pubKeyString})
+    const body2 = JSON.stringify({"signature": signedString});
+    fetch(`https://api.distributed.town/api/skillwallet/${tokenValue}/pubKey`,{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body
+    })
+  .then(response => response.text())
+  .then(data => {
+    console.log(data);
     fetch(`https://api.distributed.town/api/skillwallet/${tokenValue}/activate`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        "pubKey": pubKeyString
-    })
+      body: body2
     })
   .then(response => response.text())
   .then(data => {
@@ -84,6 +97,9 @@ export default function Qr() {
       navigation.navigate('Profile');
     }
   });
+    
+  });
+    
   }
   const _authenticate = async (qr) => {
     const qrData = JSON.parse(qr);

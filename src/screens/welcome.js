@@ -26,7 +26,7 @@ export default function Welcome() {
                 <View style={{flexDirection:'row', alignSelf:'center',width:'60%', flexWrap:'wrap', alignItems:'center', marginTop:'5%'}}>
                 <Text style={styles.subtitle}>Don’t have a Community yet? 
                 Visit</Text><TouchableOpacity onPress={()=>Linking.openURL('https://app.distributed.town')}><Text style={styles.sublink}>app.distributed.town</Text></TouchableOpacity>
-                <Text style={styles.subtitle}>to join one!</Text></View>
+                <Text style={styles.subtitle}> to join one!</Text></View>
             </View>
           
         </View>
