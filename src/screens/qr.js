@@ -72,7 +72,7 @@ export default function Qr() {
     const signedString = signedHex.toString();
     const body = JSON.stringify({"pubKey": pubKeyString})
     const body2 = JSON.stringify({"signature": signedString});
-    fetch(`https://api.distributed.town/api/skillwallet/${tokenValue}/pubKey`,{
+    fetch(`https://api.skillwallet.id/api/skillwallet/${tokenValue}/pubKey`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export default function Qr() {
   .then(response => response.text())
   .then(data => {
     console.log(data);
-    fetch(`https://api.distributed.town/api/skillwallet/${tokenValue}/activate`,{
+    fetch(`https://api.skillwallet.id/api/skillwallet/${tokenValue}/activate`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ export default function Qr() {
     const body = JSON.stringify({"signature" : signedString ,"action":1});
     const tokenjson = JSON.parse(JSON.parse(token));
     console.log(tokenjson.tokenId,"body");
-    fetch(`https://api.distributed.town/api/skillwallet/${tokenjson.tokenId}/validate`,{
+    fetch(`https://api.skillwallet.id/api/skillwallet/${tokenjson.tokenId}/validate`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

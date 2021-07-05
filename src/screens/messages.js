@@ -47,7 +47,7 @@ export default function Messages() {
 
   const _getMessages = (data) => {
     let t = JSON.parse(data);
-    fetch(`https://api.distributed.town/api/skillwallet/${t.tokenId}/messages`)
+    fetch(`https://api.skillwallet.id/api/skillwallet/${t.tokenId}/messages`)
   .then(response => response.json())
   .then(data => {
     console.log(data);

@@ -48,8 +48,8 @@ export default function Profile() {
     const _getProfileInfo = () => {
       console.log(token);
       let t = JSON.parse(token);
-      console.log(t.tokenId,"what's this?");
-      fetch(`https://api.distributed.town/api/skillwallet?tokenId=${t.tokenId}`)
+      console.log(t.tokenId);
+      fetch(`https://api.skillwallet.id/api/skillwallet?tokenId=${t.tokenId}`)
   .then(response => response.json())
   .then(data => {
     console.log(data,"Data");
