@@ -12,6 +12,8 @@ export default function Profile() {
     const navigation = useNavigation();
     const [token,setToken] = useState(null);
     const [profileflag, setPFlag] = useState(false);
+    const [isActive, setActive] = useState(false);
+    const [lastRefresh, setLastRefresh] = useState('Now');
     const [profileinfo, setProfileinfo] = useState({
       "pastCommunities": [
           {
@@ -46,10 +48,27 @@ export default function Profile() {
   });
     
     const _getProfileInfo = () => {
+    var date = new Date().getDate(); //Current Date
+    var month = new Date().getMonth() + 1; //Current Month
+    var year = new Date().getFullYear(); //Current Year
+    var hours = new Date().getHours(); //Current Hours
+    var min = new Date().getMinutes(); //Current Minutes
+    var sec = new Date().getSeconds(); //Current Seconds
       console.log(token,"ProfileToken");
       let t = JSON.parse(JSON.parse(token));
       console.log(t.tokenId,"t.tokenid");
-      fetch(`https://api.skillwallet.id/api/skillwallet?tokenId=${t.tokenId}`)
+      fetch(`https://api.skillwallet.id/api/skillwallet/${t.tokenId}/isActive`)
+      .then(response => response.json())
+      .then(result => {
+        console.log(result.isActive);
+        setActive(result.isActive);
+        setLastRefresh(
+          date + '/' + month + '/' + year 
+          + ' ' + hours + ':' + min + ':' + sec
+        );
+    
+        if(isActive==true){
+          fetch(`https://api.skillwallet.id/api/skillwallet?tokenId=${t.tokenId}`)
   .then(response => response.json())
   .then(data => {
     console.log(data,"Data");
@@ -58,6 +77,10 @@ export default function Profile() {
     setPFlag(true);
     
   });
+        }
+      })
+      .catch(error => console.log('error', error));
+      
     }
     
       const storeData = async (value) => {
@@ -121,7 +144,7 @@ export default function Profile() {
                     </View>
                   </View>
           )});
-    if(token!=null && profileflag && profileinfo){
+    if(token!=null && profileflag && profileinfo && isActive){
     return (
         <View style={styles.container}>
             <Icon name="menu" type="ionicons" color="#FFF" style={styles.menu}></Icon>
@@ -175,6 +198,22 @@ export default function Profile() {
           
         </View>
     );
+
+}
+else if(!isActive){
+  return(
+  <View style={{backgroundColor:`linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(65,90,114,1) 0%, rgba(33,45,57,1) 100%)`, height:'100%', alignContent:'center'}}>
+    <View style={{marginTop:'40%'}}></View><Text style={styles.text}>Awaiting Wallet Activation</Text><Text style={styles.subtitle}>Please check back later</Text>
+    <ActivityIndicator style={{marginTop:'20%', marginBottom:'20%'}} animating={true} color={Colors.blue800} />
+    <TouchableOpacity onPress={()=>{_getProfileInfo();}}><View style={styles.btn}>
+                    <Text style={styles.btntext}>Refresh Status</Text>
+                    <Icon name="refresh" type="ionicon" style={styles.btnicon} color='#FFF'></Icon>
+                </View></TouchableOpacity>
+                <View style={{marginTop:'40%'}}>
+                </View>
+                <Text style={styles.subtitle}>Last refreshed on {lastRefresh}</Text>
+                </View>
+  );
 
 }
 else return( <View style={{backgroundColor:`linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(65,90,114,1) 0%, rgba(33,45,57,1) 100%)`, height:'100%', alignContent:'center'}}><ActivityIndicator style={{marginTop:'40%'}} animating={true} color={Colors.blue800} /></View>);
@@ -242,8 +281,8 @@ const styles = StyleSheet.create({
         color:"#FFF",
         fontSize:17,
         textAlign:'center',
-        marginTop:'50%',
-        width:'40%',
+        marginTop:'1%',
+        width:'100%',
         alignSelf:'center'
     },
     menu: {
@@ -352,6 +391,31 @@ const styles = StyleSheet.create({
     position:'absolute',
     zIndex:2,
   },
+  btn: {
+    borderRadius:20,
+    backgroundColor:`linear-gradient(90deg, rgba(20,110,170,1) 0%, rgba(20,110,170,0) 100%);`,
+    width:'60%',
+    alignSelf:'center',
+    display:'flex',
+    flexDirection:'row',
+    marginTop:'5%',
+    paddingVertical:'3%',
+    paddingHorizontal:'15%',
+    alignContent:'center',
+    elevation:2
+},
+btntext: {
+    color:"#FFF",
+    fontFamily:'AR',
+    fontSize:20,
+    alignSelf:'center',
+    textAlign:'center',
+},
+btnicon: {
+    color:"#FFF",
+    fontSize:20,
+    marginLeft:'10%'
+}
     
 
 });
