@@ -84,14 +84,15 @@ export default function Qr() {
     })
   .then(response => {
     console.log(response.status);
+    console.log(response.status==200);
     console.log(body2);
     if(response.status==200){
       setAck(true);
     }
   })
   .then(data => {
-    // console.log(data);
-    if(ack==true){
+    console.log(ack);
+    if(ack==false){
     fetch(`https://api.skillwallet.id/api/skillwallet/${tokenValue}/activate`,{
       method: 'POST',
       headers: {

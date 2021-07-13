@@ -1,9 +1,9 @@
 {
-  "name": "skillwallet",
+  "name": "SkillWallet",
   "displayName": "SkillWallet",
   "icon": "./assets/logo.png",
   "expo": {
-    "name": "skillwallet",
+    "name": "SkillWallet",
     "slug": "skillwallet",
     "version": "1.0.0",
     "assetBundlePatterns": [

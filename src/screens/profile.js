@@ -6,11 +6,13 @@ import { Icon } from 'react-native-elements'
 import { TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, Colors } from 'react-native-paper';
+import * as eccryptoJS from 'eccrypto-js';
 
 
 export default function Profile() {
     const navigation = useNavigation();
     const [token,setToken] = useState(null);
+    const [key, setKey] = useState(null);
     const [profileflag, setPFlag] = useState(false);
     const [isActive, setActive] = useState(false);
     const [lastRefresh, setLastRefresh] = useState('Now');
@@ -46,6 +48,18 @@ export default function Profile() {
       "nickname": "testuser",
       "diToCredits": 1000
   });
+
+  const getKey = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@keyPair')
+      console.log(JSON.parse(jsonValue));
+      setKey(JSON.parse(jsonValue));
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+      
+    } catch(e) {
+      // error reading value
+    }
+  }
     
     const _getProfileInfo = () => {
     var date = new Date().getDate(); //Current Date
@@ -57,6 +71,7 @@ export default function Profile() {
       console.log(token,"ProfileToken");
       let t = JSON.parse(JSON.parse(token));
       console.log(t.tokenId,"t.tokenid");
+      
       fetch(`https://api.skillwallet.id/api/skillwallet/${t.tokenId}/isActive`)
       .then(response => response.json())
       .then(result => {
@@ -107,11 +122,12 @@ export default function Profile() {
 
       useEffect(() => {
         getData();
+        getKey();
         console.log(token);
         if(token!=null && !profileflag){
           _getProfileInfo();
         }
-      }, [profileinfo,token, profileflag]);
+      }, [token, profileinfo]);
 
       const pastList = profileinfo.pastCommunities.map((data) => {
         return (
@@ -144,7 +160,7 @@ export default function Profile() {
                     </View>
                   </View>
           )});
-    if(token!=null && profileflag && profileinfo && isActive){
+    if(token!=null && profileflag && profileinfo){
     return (
         <View style={styles.container}>
             <Icon name="menu" type="ionicons" color="#FFF" style={styles.menu}></Icon>
@@ -200,7 +216,7 @@ export default function Profile() {
     );
 
 }
-else if(!isActive){
+else if(!isActive && profileflag){
   return(
   <View style={{backgroundColor:`linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(65,90,114,1) 0%, rgba(33,45,57,1) 100%)`, height:'100%', alignContent:'center'}}>
     <View style={{marginTop:'40%'}}></View><Text style={styles.text}>Awaiting Wallet Activation</Text><Text style={styles.subtitle}>Please check back later</Text>
@@ -211,7 +227,7 @@ else if(!isActive){
                 </View></TouchableOpacity>
                 <View style={{marginTop:'40%'}}>
                 </View>
-                <Text style={styles.subtitle}>Last refreshed on {lastRefresh}</Text>
+                <Text style={styles.subtitle}>Last updated: {lastRefresh}</Text>
                 </View>
   );
 
