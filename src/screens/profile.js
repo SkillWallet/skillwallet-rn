@@ -46,9 +46,9 @@ export default function Profile() {
   });
     
     const _getProfileInfo = () => {
-      console.log(token);
-      let t = JSON.parse(token);
-      console.log(t.tokenId);
+      console.log(token,"ProfileToken");
+      let t = JSON.parse(JSON.parse(token));
+      console.log(t.tokenId,"t.tokenid");
       fetch(`https://api.skillwallet.id/api/skillwallet?tokenId=${t.tokenId}`)
   .then(response => response.json())
   .then(data => {
@@ -74,7 +74,7 @@ export default function Profile() {
         try {
           const jsonValue = await AsyncStorage.getItem('@token')
           console.log(JSON.parse(jsonValue),"TOKEN");
-          setToken(JSON.parse(jsonValue));
+          setToken(jsonValue);
           
           
         } catch(e) {

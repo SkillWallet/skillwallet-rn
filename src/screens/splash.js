@@ -99,9 +99,21 @@ export default function Splash() {
         }
       }
 
+      const removeItemValue = async (key) => {
+        try {
+            await AsyncStorage.removeItem(key);
+            return true;
+        }
+        catch(exception) {
+            return false;
+        }
+        
+    }
+
     useEffect(() => {
         getKeys();
         getData();
+        // removeItemValue('@token');
       });
     
     if(loaded){

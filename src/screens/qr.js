@@ -14,6 +14,7 @@ export default function Qr() {
   const [code, setCode] = useState(false);
   const [token, setToken] = useState(null);
   const [key, setKey] = useState(null);
+  const [ack, setAck] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -72,6 +73,8 @@ export default function Qr() {
     const signedString = signedHex.toString();
     const body = JSON.stringify({"pubKey": pubKeyString})
     const body2 = JSON.stringify({"signature": signedString});
+  
+    
     fetch(`https://api.skillwallet.id/api/skillwallet/${tokenValue}/pubKey`,{
       method: 'POST',
       headers: {
@@ -79,9 +82,16 @@ export default function Qr() {
       },
       body: body
     })
-  .then(response => response.text())
+  .then(response => {
+    console.log(response.status);
+    console.log(body2);
+    if(response.status==200){
+      setAck(true);
+    }
+  })
   .then(data => {
-    console.log(data);
+    // console.log(data);
+    if(ack==true){
     fetch(`https://api.skillwallet.id/api/skillwallet/${tokenValue}/activate`,{
       method: 'POST',
       headers: {
@@ -89,7 +99,7 @@ export default function Qr() {
       },
       body: body2
     })
-  .then(response => response.text())
+  .then(response => response.json())
   .then(data => {
     console.log(data);
     if(data.message=='Skill Wallet activated successfully.'){
@@ -98,14 +108,14 @@ export default function Qr() {
     }
   });
     
-  });
+  }});
     
   }
   const _authenticate = async (qr) => {
     const qrData = JSON.parse(qr);
     console.log(JSON.parse(token),"TOKEN");
-    console.log(qrData.nonce.toString());
-    const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()));
+    console.log(qrData.hash.toString());
+    const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.hash.toString()));
     const signedHex = eccryptoJS.bufferToHex(signed);
     const signedString = signedHex.toString();
     const body = JSON.stringify({"signature" : signedString ,"action":1});
@@ -129,6 +139,8 @@ export default function Qr() {
     }
     
 })
+
+
   }
 
   const handleBarCodeScanned = e => {
