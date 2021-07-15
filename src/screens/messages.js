@@ -27,7 +27,7 @@ export default function Messages() {
           {
               "_id": "01f4ega4zmjqbdc24p0vrxe2xk",
               "_mod": 1619689542646689800,
-              "contactSkillWalletId": 2,
+              "contactSkillWalletId": 5,
               "message": "Start working on your Gig - and earn DITO Credits!",
               "skillWalletId": 1,
               "title": "Your Gig has started!",
@@ -36,7 +36,7 @@ export default function Messages() {
           {
               "_id": "01f4ega4zpdr9eqjg81n3r1zb1",
               "_mod": 1619689542648208600,
-              "contactSkillWalletId": 2,
+              "contactSkillWalletId": 5,
               "message": "Start working on your Gig - and earn DITO Credits!",
               "skillWalletId": 1,
               "title": "Your Gig has started!",
@@ -64,7 +64,7 @@ export default function Messages() {
 
       const msgList = msgInfo.messages.map((data) => {
         return (
-          <TouchableOpacity onPress={()=>navigation.navigate('Chat',{sid:data.skillWalletId,rid:data.contactSkillWalletId})}><View style={styles.current}>
+          <TouchableOpacity onPress={()=>navigation.navigate('Chat',{rid:data.contactSkillWalletId})}><View style={styles.current}>
                   <View style={{flexDirection:'row', display:'flex'}}>
                     <Text style={styles.currentText}>• {data.title}</Text>
                 

@@ -72,29 +72,32 @@ export default function Profile() {
       let t = JSON.parse(JSON.parse(token));
       console.log(t.tokenId,"t.tokenid");
       
-      fetch(`https://api.skillwallet.id/api/skillwallet/${t.tokenId}/isActive`)
-      .then(response => response.json())
-      .then(result => {
-        console.log(result.isActive);
-        setActive(result.isActive);
-        setLastRefresh(
-          date + '/' + month + '/' + year 
-          + ' ' + hours + ':' + min + ':' + sec
-        );
+      // fetch(`https://api.skillwallet.id/api/skillwallet/${t.tokenId}/isActive`)
+      // .then(response => response.json())
+      // .then(result => {
+      //   console.log(result.isActive);
+      //   setActive(result.isActive);
+      //   setLastRefresh(
+      //     date + '/' + month + '/' + year 
+      //     + ' ' + hours + ':' + min + ':' + sec
+      //   );
+      // })
+      
+    if(!profileflag){
+        fetch(`https://api.skillwallet.id/api/skillwallet?tokenId=${t.tokenId}`)
+.then(response => response.json())
+.then(data => {
+  console.log(data,"Data");
+  setProfileinfo(data);
+  storeData(JSON.stringify(profileinfo));
+  setPFlag(true);
+  console.log(profileflag);
+  
+});
+    }
     
-        if(isActive==true){
-          fetch(`https://api.skillwallet.id/api/skillwallet?tokenId=${t.tokenId}`)
-  .then(response => response.json())
-  .then(data => {
-    console.log(data,"Data");
-    setProfileinfo(data);
-    storeData(JSON.stringify(profileinfo));
-    setPFlag(true);
-    
-  });
-        }
-      })
-      .catch(error => console.log('error', error));
+      
+      
       
     }
     
@@ -113,7 +116,9 @@ export default function Profile() {
           const jsonValue = await AsyncStorage.getItem('@token')
           console.log(JSON.parse(jsonValue),"TOKEN");
           setToken(jsonValue);
-          
+            _getProfileInfo();
+         
+        
           
         } catch(e) {
           // error reading value
@@ -123,11 +128,9 @@ export default function Profile() {
       useEffect(() => {
         getData();
         getKey();
-        console.log(token);
-        if(token!=null && !profileflag){
-          _getProfileInfo();
-        }
-      }, [token, profileinfo]);
+     
+        console.log(profileflag, token);
+      }, [profileflag, token, profileinfo]);
 
       const pastList = profileinfo.pastCommunities.map((data) => {
         return (
@@ -160,7 +163,7 @@ export default function Profile() {
                     </View>
                   </View>
           )});
-    if(token!=null && profileflag && profileinfo){
+    if(token && profileflag){
     return (
         <View style={styles.container}>
             <Icon name="menu" type="ionicons" color="#FFF" style={styles.menu}></Icon>
@@ -216,22 +219,22 @@ export default function Profile() {
     );
 
 }
-else if(!isActive && profileflag){
-  return(
-  <View style={{backgroundColor:`linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(65,90,114,1) 0%, rgba(33,45,57,1) 100%)`, height:'100%', alignContent:'center'}}>
-    <View style={{marginTop:'40%'}}></View><Text style={styles.text}>Awaiting Wallet Activation</Text><Text style={styles.subtitle}>Please check back later</Text>
-    <ActivityIndicator style={{marginTop:'20%', marginBottom:'20%'}} animating={true} color={Colors.blue800} />
-    <TouchableOpacity onPress={()=>{_getProfileInfo();}}><View style={styles.btn}>
-                    <Text style={styles.btntext}>Refresh Status</Text>
-                    <Icon name="refresh" type="ionicon" style={styles.btnicon} color='#FFF'></Icon>
-                </View></TouchableOpacity>
-                <View style={{marginTop:'40%'}}>
-                </View>
-                <Text style={styles.subtitle}>Last updated: {lastRefresh}</Text>
-                </View>
-  );
+// else if(!isActive && profileflag){
+//   return(
+//   <View style={{backgroundColor:`linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(65,90,114,1) 0%, rgba(33,45,57,1) 100%)`, height:'100%', alignContent:'center'}}>
+//     <View style={{marginTop:'40%'}}></View><Text style={styles.text}>Awaiting Wallet Activation</Text><Text style={styles.subtitle}>Please check back later</Text>
+//     <ActivityIndicator style={{marginTop:'20%', marginBottom:'20%'}} animating={true} color={Colors.blue800} />
+//     <TouchableOpacity onPress={()=>{_getProfileInfo();}}><View style={styles.btn}>
+//                     <Text style={styles.btntext}>Refresh Status</Text>
+//                     <Icon name="refresh" type="ionicon" style={styles.btnicon} color='#FFF'></Icon>
+//                 </View></TouchableOpacity>
+//                 <View style={{marginTop:'40%'}}>
+//                 </View>
+//                 <Text style={styles.subtitle}>Last updated: {lastRefresh}</Text>
+//                 </View>
+//   );
 
-}
+// }
 else return( <View style={{backgroundColor:`linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(65,90,114,1) 0%, rgba(33,45,57,1) 100%)`, height:'100%', alignContent:'center'}}><ActivityIndicator style={{marginTop:'40%'}} animating={true} color={Colors.blue800} /></View>);
 }
 
