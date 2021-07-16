@@ -13,8 +13,7 @@ export default function Messages() {
     const getData = async () => {
       try {
         const jsonValue = await AsyncStorage.getItem('@token');
-        console.log(jsonValue);
-        setToken(jsonValue);
+        setToken(JSON.parse(jsonValue));
         _getMessages(jsonValue);
         
       } catch(e) {
@@ -23,31 +22,22 @@ export default function Messages() {
     }
 
     const [msgInfo , setMsgInfo] = useState({
-      "messages": [
+      "notifications": [
           {
-              "_id": "01f4ega4zmjqbdc24p0vrxe2xk",
-              "_mod": 1619689542646689800,
-              "contactSkillWalletId": 5,
-              "message": "Start working on your Gig - and earn DITO Credits!",
-              "skillWalletId": 1,
-              "title": "Your Gig has started!",
-              "type": 0
+              "_id": "01fanbj9pa63kfeaw0x6bwphg5",
+              "_mod": 1626361898700165600,
+              "contactSkillWalletId": "3",
+              "message": "Please wait while we retrieve your notifications",
+              "skillWalletId": "4",
+              "title": "Loading Notifications"
           },
-          {
-              "_id": "01f4ega4zpdr9eqjg81n3r1zb1",
-              "_mod": 1619689542648208600,
-              "contactSkillWalletId": 5,
-              "message": "Start working on your Gig - and earn DITO Credits!",
-              "skillWalletId": 1,
-              "title": "Your Gig has started!",
-              "type": 0
-          }
       ]
   });
 
   const _getMessages = (data) => {
     let t = JSON.parse(data);
-    fetch(`https://api.skillwallet.id/api/skillwallet/${t.tokenId}/messages`)
+    console.log(JSON.parse(t).tokenId)
+    fetch(`https://api.skillwallet.id/api/skillwallet/${JSON.parse(t).tokenId}/notifications`)
   .then(response => response.json())
   .then(data => {
     console.log(data);
@@ -58,11 +48,12 @@ export default function Messages() {
   
   useEffect(() => {
     getData();
-  }, [msgInfo]);
+    console.log(msgInfo);
+  }, []);
    
   
 
-      const msgList = msgInfo.messages.map((data) => {
+      const msgList = msgInfo.notifications.map((data) => {
         return (
           <TouchableOpacity onPress={()=>navigation.navigate('Chat',{rid:data.contactSkillWalletId})}><View style={styles.current}>
                   <View style={{flexDirection:'row', display:'flex'}}>
@@ -81,7 +72,7 @@ export default function Messages() {
         <View style={styles.container}>
           <View style={{height:'100%'}}>
             <ScrollView>
-            <TouchableOpacity onPress={()=>navigation.navigate('Gigs')}><Icon name="arrow-back" type="ionicons" color="#FFF" style={styles.menu}></Icon></TouchableOpacity>
+            <TouchableOpacity onPress={()=>navigation.navigate('Dashboard')}><Icon name="arrow-back" type="ionicons" color="#FFF" style={styles.menu}></Icon></TouchableOpacity>
             <View>
             <Text style={styles.title}>Messages</Text>
                 <View>{msgList}</View>

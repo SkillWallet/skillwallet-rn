@@ -6,6 +6,8 @@ import { Icon } from 'react-native-elements'
 import { TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { ActivityIndicator, Colors } from 'react-native-paper';
+
 
 export default function Chat({route}) {
 const navigation = useNavigation();
@@ -14,23 +16,33 @@ const { rid } = route.params;
 const [token,setToken] = useState(null);
 const [personal, setPersonal] = useState(null);
 const [chat, setChat] = useState(null);
-
+const [flag, setFlag] = useState(false);
+const [proFlag, setProFlag] = useState(false);
     const getToken = async () => {
       try {
         const tokenValue = await AsyncStorage.getItem('@token')
-        console.log(tokenValue);
+        console.log(JSON.parse(tokenValue));
         setToken(JSON.parse(tokenValue));
-        getPersonal();
+        if(!proFlag){
+        getPersonal(JSON.parse(tokenValue));
+        }
+        console.log(JSON.parse(token).tokenId,"Get Token Function")
+        if(flag){
+          console.log("Conditional called")
+          _getMessages(JSON.parse(token).tokenId);
+        }
       } catch(e) {
         // error reading value
       }
     }
-    const _getMessages = () => {
+    
+    const _getMessages = async (tokenid) => {
+      console.log(tokenid,"Get Messages Called")
       var requestOptions = {
         method: 'GET'
       };
-      console.log(JSON.parse(token).tokenId);
-      fetch(`https://api.skillwallet.id/api/skillwallet/${JSON.parse(token).tokenId}/message?recipient=${rid}`, requestOptions)
+      console.log(tokenid);
+     await fetch(`https://api.skillwallet.id/api/skillwallet/${tokenid}/message?recipient=${rid}`, requestOptions)
   .then(response => response.json())
   .then(result => {
     if(JSON.stringify(result) == '{}'){
@@ -74,7 +86,7 @@ const [chat, setChat] = useState(null);
           user: {
             _id: temp2.chat.messages[i].sender == temp2.chat.participant2 ? temp2.chat.participant2:temp2.chat.participant1,
             name: temp2.chat.messages[i].sender == temp2.chat.participant2 ? temp2.chat.participant2Name:temp2.chat.participant1Name,
-            avatar: temp2.chat.messages[i].sender == temp2.chat.participant2 ? temp2.chat.participant1PhotoUrl:personal.imageUrl,
+            avatar: temp2.chat.messages[i].sender == temp2.chat.participant2 ? temp2.chat.participant2PhotoUrl:personal.imageUrl,
           },
         })
       
@@ -82,26 +94,33 @@ const [chat, setChat] = useState(null);
     setChat(temp2);
     setMessages(temp3);
     console.log(temp3);
+    setFlag(true);
   }
   })
     
   .catch(error => console.log('error', error));
 
-    }
+    
+  }
     
   
-    const getPersonal = async () => {
+    const getPersonal = async (t) => {
+      console.log("Get Personal Called")
         try {
         const jsonValue = await AsyncStorage.getItem('@profileInfo')
           console.log(JSON.stringify(JSON.parse(jsonValue)));
+          console.log("Get Personal Done")
           setPersonal(JSON.parse(jsonValue));
-          console.log(personal.imageUrl, "AVATAR");
-          _getMessages();
-
+          setProFlag(true);
+          console.log(personal, "Personal Set");
+          _getMessages(JSON.parse(t).tokenId);
           
         } catch(e) {
           // error reading value
+          console.log(e);
         }
+ 
+        
       }
 
    
@@ -112,7 +131,7 @@ const [chat, setChat] = useState(null);
     
     
     
-  }, [])
+  }, [token, personal, chat, messages])
 
   const onSend = (message) => {
     console.log(message)
@@ -139,16 +158,20 @@ const [chat, setChat] = useState(null);
   }
 
  
+  if(chat&&messages&&personal&&token){
   return (
       <View style={{flex:1}}>
+
+
+        
           
           {personal && token && chat &&<View style={{paddingVertical:'7.5%', backgroundColor:"#FFF", elevation:1, flexDirection:'row', paddingHorizontal:'5%'}}>
           <TouchableOpacity onPress={()=>navigation.navigate('Messages')}><Icon name="arrow-back" type="ionicons" color="#000" size={30} style={{marginTop:'25%'}}></Icon></TouchableOpacity>
-          <Image source={{uri:chat.chat.participant1PhotoUrl}} style={{height:50, width:50, borderRadius:50, alignSelf:'center', marginLeft:'5%'}}></Image>
-              <Text style={{fontWeight:'bold', textAlign:'center', fontSize:20, textAlignVertical:'center'}}>  {chat.chat.participant1Name}</Text>
+          <Image source={{uri:chat.chat.participant2PhotoUrl}} style={{height:50, width:50, borderRadius:50, alignSelf:'center', marginLeft:'5%'}}></Image>
+              <Text style={{fontWeight:'bold', textAlign:'center', fontSize:20, textAlignVertical:'center'}}>  {chat.chat.participant2Name}</Text>
               
           </View>}
-    {token && personal &&<GiftedChat
+    {token && personal && messages&&<GiftedChat
       messages={messages}
       showUserAvatar = {true}
       alwaysShowSend = {true}
@@ -178,5 +201,7 @@ const [chat, setChat] = useState(null);
       }}
     />}
     </View>
-  )
+  )}
+  else return( <View style={{backgroundColor:'#FFF', height:'100%', alignContent:'center'}}><ActivityIndicator style={{marginTop:'40%'}} animating={true} color={Colors.blue800} size={30} /></View>);
+
 }
