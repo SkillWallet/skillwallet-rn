@@ -131,7 +131,7 @@ const [proFlag, setProFlag] = useState(false);
     
     
     
-  }, [token, personal, chat, messages])
+  }, [token, personal, chat, messages, flag])
 
   const onSend = (message) => {
     console.log(message)
