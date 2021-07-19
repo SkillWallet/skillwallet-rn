@@ -113,6 +113,15 @@ export default function Qr() {
     
   }
   const _authenticate = async (qr) => {
+    const Action = {
+      Activate: 0,
+      Login: 1,
+      CreateGig: 2,
+      TakeGig: 3,
+      SubmitGig: 4,
+      CompleteGig: 5
+    }
+    if(JSON.parse(qr).tokenId){
     const qrData = JSON.parse(qr);
     console.log(JSON.parse(token),"TOKEN");
     console.log(qrData.nonce.toString());
@@ -140,6 +149,67 @@ export default function Qr() {
     }
     
 })
+    }
+    //Accepting a gig
+    else if(JSON.parse(qr).action>2){
+      const qrData = JSON.parse(qr);
+      console.log(qrData.nonce.toString());
+      const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()));
+      const signedHex = eccryptoJS.bufferToHex(signed);
+      const signedString = signedHex.toString();
+      const body = JSON.stringify({"signature" : signedString ,"action":JSON.parse(qr).action,"intParams":JSON.parse(qr).intParams});
+      const tokenjson = JSON.parse(JSON.parse(token));
+      console.log(body,"Action=Accept Gig/Submit Gig");
+      fetch(`https://api.skillwallet.id/api/skillwallet/${tokenjson.tokenId}/validate`,{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body ,
+    })
+.then(response => {
+  console.log(response.status);
+  if(response.status==200){
+    alert('Congratulations! You have taken on a new gig!');
+    navigation.navigate('Profile');
+    }
+    else{
+      alert('Something went wrong');
+    }
+    
+})
+
+    }
+        //Creating a gig
+        else if(JSON.parse(qr).action==2){
+          const qrData = JSON.parse(qr);
+          console.log(qrData.nonce.toString());
+          const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()));
+          const signedHex = eccryptoJS.bufferToHex(signed);
+          const signedString = signedHex.toString();
+          const body = JSON.stringify({"signature" : signedString ,"action":2,"intParams":JSON.parse(qr).intParams, "stringParams":JSON.parse(qr).stringParams});
+          const tokenjson = JSON.parse(JSON.parse(token));
+          console.log(body,"Action=Create Gig");
+          fetch(`https://api.skillwallet.id/api/skillwallet/${tokenjson.tokenId}/validate`,{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: body ,
+        })
+    .then(response => {
+      console.log(response.status);
+      if(response.status==200){
+        alert('Congratulations! You have created a new gig!');
+        navigation.navigate('Profile');
+        }
+        else{
+          alert('Something went wrong');
+        }
+        
+    })
+    
+        }
 
 
   }
