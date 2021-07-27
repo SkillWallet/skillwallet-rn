@@ -183,7 +183,7 @@ export default function Profile() {
                     </View>
                   </View>
           )});
-    if(token && profileflag){
+    if(token && profileflag && profileinfo.nickname!="Loading"){
     return (
         <View style={styles.container}>
           <View style={{flexDirection:'row', justifyContent:'space-between'}}>
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     container: {
         height: '100%',
         paddingTop:'10%',
-        paddingHorizontal:'10%',
+        paddingHorizontal:'5%',
         position: 'relative',
         backgroundColor: `linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(65,90,114,1) 0%, rgba(33,45,57,1) 100%)`
     },
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     sectitle: {
       fontFamily:'AR',
       color:"#FFF",
-      fontSize:22,
+      fontSize:20,
       textAlign:'left',
       marginTop:'2.5%',
       textDecorationLine:'underline'
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     text: {
         fontFamily:'AR',
         color:"#FFF",
-        fontSize:25,
+        fontSize:20,
         textAlign:'center',
         alignSelf:'center',
     },
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     link: {
         fontFamily:'AR',
         color:"#FFF",
-        fontSize:18,
+        fontSize:12,
         textAlign:'center',
         alignSelf:'center',
         textDecorationStyle:'solid',
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     subtitle: {
         fontFamily:'AR',
         color:"#FFF",
-        fontSize:17,
+        fontSize:13,
         textAlign:'center',
         marginTop:'1%',
         width:'100%',
@@ -385,13 +385,13 @@ const styles = StyleSheet.create({
 },
     currentText:{
       fontFamily:'AR',
-      fontSize:17,
+      fontSize:13,
       color:"#FFF",
       justifyContent:'flex-start'
     },
     currentTextRight:{
       fontFamily:'AR',
-      fontSize:17,
+      fontSize:13,
       color:"#FFF",
       justifyContent:'flex-end',
       textAlign:'right',
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     },
     currentTextRightLink:{
       fontFamily:'AR',
-      fontSize:17,
+      fontSize:13,
       color:"#FFF",
       justifyContent:'flex-end',
       textAlign:'right',
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   },
   skillTextRight:{
     fontFamily:'AR',
-    fontSize:17,
+    fontSize:13,
     color:"#FFF",
     justifyContent:'flex-end',
     textAlign:'right',
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     borderRadius:20,
-    backgroundColor:`linear-gradient(90deg, rgba(20,110,170,1) 0%, rgba(20,110,170,0) 100%);`,
+    backgroundColor:`linear-gradient(90deg, rgba(20,110,130,1) 0%, rgba(20,110,130,0) 100%);`,
     width:'60%',
     alignSelf:'center',
     display:'flex',
