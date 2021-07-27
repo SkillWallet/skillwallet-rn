@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, Button, ImageBackground, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, Button, ImageBackground, ScrollView, ToastAndroid } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Svg, { Line, Polyline } from 'react-native-svg';
 import { Icon } from 'react-native-elements'
@@ -97,10 +97,28 @@ export default function Profile() {
   
 });
     }
+
+    
     
       
       
       
+    }
+
+    const _profileRefresh = () =>{
+      let t = JSON.parse(JSON.parse(token));
+      fetch(`https://api.skillwallet.id/api/skillwallet?tokenId=${t.tokenId}`)
+.then(response => response.json())
+.then(data => {
+  console.log(data.pastCommunities,"Data");
+  if(data.pastCommunities!=undefined){
+  setProfileinfo(data);
+  }
+  storeData(JSON.stringify(profileinfo));
+  setPFlag(true);
+  console.log(profileflag);
+  
+});
     }
     
       const storeData = async (value) => {
@@ -168,7 +186,10 @@ export default function Profile() {
     if(token && profileflag){
     return (
         <View style={styles.container}>
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
             <Icon name="menu" type="ionicons" color="#FFF" style={styles.menu}></Icon>
+            <TouchableOpacity onPress={()=>{_profileRefresh();ToastAndroid.show("Refreshing", ToastAndroid.SHORT);}}><Icon name="refresh" type="ionicons" color="#FFF"></Icon></TouchableOpacity>
+            </View>
             <View style={{height:'100%'}}>
                 <Text style={styles.title}>SkillWallet</Text>
                 <ScrollView>
