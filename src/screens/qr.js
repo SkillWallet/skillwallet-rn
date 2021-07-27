@@ -68,7 +68,7 @@ export default function Qr() {
     const qrValue = JSON.parse(qr);
     const tokenValue = qrValue.tokenId
     console.log(tokenValue);
-    const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrValue.hash.toString()));
+    const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrValue.nonce.toString()),true);
     const signedHex = eccryptoJS.bufferToHex(signed);
     const signedString = signedHex.toString();
     const body = JSON.stringify({"pubKey": pubKeyString})
@@ -85,7 +85,7 @@ export default function Qr() {
   .then(response => {
     console.log(response.status);
     console.log(response.status==200);
-    console.log(body2);
+    console.log(body2,"PubKeyEndpointRes");
     if(response.status==200){
       setAck(true);
     }
@@ -105,6 +105,7 @@ export default function Qr() {
     console.log(data);
     if(data.message=='Skill Wallet activated successfully.'){
       alert(`Congratulations! You have successfully logged in!`);
+      storeData(JSON.stringify(qr));
       navigation.navigate('Profile');
     }
   });
@@ -125,12 +126,12 @@ export default function Qr() {
     const qrData = JSON.parse(qr);
     console.log(JSON.parse(token),"TOKEN");
     console.log(qrData.nonce.toString());
-    const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()));
+    const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()),true);
     const signedHex = eccryptoJS.bufferToHex(signed);
     const signedString = signedHex.toString();
     const body = JSON.stringify({"signature" : signedString ,"action":1});
     const tokenjson = JSON.parse(JSON.parse(token));
-    console.log(tokenjson.tokenId,"body");
+    console.log(body,"body");
     fetch(`https://api.skillwallet.id/api/skillwallet/${tokenjson.tokenId}/validate`,{
       method: 'POST',
       headers: {
@@ -145,7 +146,7 @@ export default function Qr() {
     navigation.navigate('Profile');
     }
     else{
-      alert('Something went wrong');
+      alert(`Something went wrong! Error code:${response.status} `);
     }
     
 })
@@ -154,7 +155,7 @@ export default function Qr() {
     else if(JSON.parse(qr).action>2){
       const qrData = JSON.parse(qr);
       console.log(qrData.nonce.toString());
-      const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()));
+      const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()),true);
       const signedHex = eccryptoJS.bufferToHex(signed);
       const signedString = signedHex.toString();
       const body = JSON.stringify({"signature" : signedString ,"action":JSON.parse(qr).action,"intParams":JSON.parse(qr).intParams});
@@ -184,7 +185,7 @@ export default function Qr() {
         else if(JSON.parse(qr).action==2){
           const qrData = JSON.parse(qr);
           console.log(qrData.nonce.toString());
-          const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()));
+          const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()),true);
           const signedHex = eccryptoJS.bufferToHex(signed);
           const signedString = signedHex.toString();
           const body = JSON.stringify({"signature" : signedString ,"action":2,"intParams":JSON.parse(qr).intParams, "stringParams":JSON.parse(qr).stringParams});
@@ -219,7 +220,7 @@ export default function Qr() {
     if(token==null){
       console.log(e.data);
       _activate(e.data);
-      storeData(JSON.stringify(e.data));
+      
     }
     else{
       _authenticate(e.data);

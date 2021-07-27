@@ -19,34 +19,34 @@ export default function Profile() {
     const [profileinfo, setProfileinfo] = useState({
       "pastCommunities": [
           {
-              "name": "DiTo Test",
+              "name": "Loading",
               "address": "0x37fEa0266c59d935Bb375Ad094F988b1A7d6cac5"
           }
       ],
       "skills": [
           {
-              "name": "Smart Contracts",
+              "name": "Loading...",
               "value": 10
           },
           {
-              "name": "Backend",
+              "name": "Loading...",
               "value": 8
           },
           {
-              "name": "Frontend",
+              "name": "Loading...",
               "value": 10
           }
       ],
       "currentCommunity": {
           "address": "0x37fEa0266c59d935Bb375Ad094F988b1A7d6cac5",
           "members": 1,
-          "name": "DiTo Test",
-          "description": "description description description",
+          "name": "Loading...",
+          "description": "Please wait while we load your profile",
           "scarcityScore": 0
       },
-      "imageUrl": "https://png.pngtree.com/png-clipart/20190619/original/pngtree-vector-avatar-icon-png-image_4017288.jpg",
-      "nickname": "testuser",
-      "diToCredits": 1000
+      "imageUrl": "https://image.flaticon.com/icons/png/512/1484/1484684.png",
+      "nickname": "Loading",
+      "diToCredits": 0
   });
 
   const getKey = async () => {
@@ -62,12 +62,12 @@ export default function Profile() {
   }
     
     const _getProfileInfo = () => {
-    var date = new Date().getDate(); //Current Date
-    var month = new Date().getMonth() + 1; //Current Month
-    var year = new Date().getFullYear(); //Current Year
-    var hours = new Date().getHours(); //Current Hours
-    var min = new Date().getMinutes(); //Current Minutes
-    var sec = new Date().getSeconds(); //Current Seconds
+    // var date = new Date().getDate(); //Current Date
+    // var month = new Date().getMonth() + 1; //Current Month
+    // var year = new Date().getFullYear(); //Current Year
+    // var hours = new Date().getHours(); //Current Hours
+    // var min = new Date().getMinutes(); //Current Minutes
+    // var sec = new Date().getSeconds(); //Current Seconds
       console.log(token,"ProfileToken");
       let t = JSON.parse(JSON.parse(token));
       console.log(t.tokenId,"t.tokenid");
@@ -87,8 +87,10 @@ export default function Profile() {
         fetch(`https://api.skillwallet.id/api/skillwallet?tokenId=${t.tokenId}`)
 .then(response => response.json())
 .then(data => {
-  console.log(data,"Data");
+  console.log(data.pastCommunities,"Data");
+  if(data.pastCommunities!=undefined){
   setProfileinfo(data);
+  }
   storeData(JSON.stringify(profileinfo));
   setPFlag(true);
   console.log(profileflag);
