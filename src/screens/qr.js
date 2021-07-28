@@ -151,6 +151,41 @@ export default function Qr() {
     
 })
     }
+
+
+    //Login Action
+    else if(JSON.parse(qr).action==1){
+      const qrData = JSON.parse(qr);
+      console.log(qrData.nonce.toString());
+      const signed = await eccryptoJS.sign(eccryptoJS.utf8ToBuffer(key.privateKey), eccryptoJS.utf8ToBuffer(qrData.nonce.toString()),true);
+      const signedHex = eccryptoJS.bufferToHex(signed);
+      const signedString = signedHex.toString();
+      const body = JSON.stringify({"signature" : signedString ,"action":JSON.parse(qr).action});
+      const tokenjson = JSON.parse(JSON.parse(token));
+      console.log(body,"Action=Login");
+      fetch(`https://api.skillwallet.id/api/skillwallet/${tokenjson.tokenId}/validate`,{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body ,
+    })
+.then(response => {
+  console.log(response.status);
+  if(response.status==200){
+    alert('You have successfully logged in, welcome back!');
+    navigation.navigate('Profile');
+    }
+    else{
+      alert('Something went wrong');
+    }
+    
+})
+
+    }
+
+
+
     //Accepting a gig
     else if(JSON.parse(qr).action>2){
       const qrData = JSON.parse(qr);

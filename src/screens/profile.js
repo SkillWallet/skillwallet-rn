@@ -83,7 +83,7 @@ export default function Profile() {
       //   );
       // })
       
-    if(!profileflag){
+    if(profileinfo.nickname=="Loading"){
         fetch(`https://api.skillwallet.id/api/skillwallet?tokenId=${t.tokenId}`)
 .then(response => response.json())
 .then(data => {
